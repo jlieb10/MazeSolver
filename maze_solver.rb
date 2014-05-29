@@ -129,20 +129,3 @@ class MazeSolver
     puts s_arr
   end
 end
-
-
-maze = "      #################
-      #               #
-      # ############ ##
-      →   #        #  #
-      ### # ### # ### #
-      #     #     #   #
-      # ## ## ##### ###
-      # #     #   #   @
-      # ## ####### ####
-      #               #
-      #################"
-
-new_maze = MazeSolver.new(maze)
-new_maze.solve
-new_maze.display_solution_path
