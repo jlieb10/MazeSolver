@@ -1,33 +1,36 @@
 class MazeSolver
   attr_reader :maze, :traveled_path, :visited_nodes, :node_queue
   def initialize(maze)
-    @maze = maze
+    @maze = maze # ASCII Maze Input to Class Var
+    @maze_array=[] # @maze variable parsed into an array of rows
+    @start=[] # coordinates of start of maze indicated by "→"
+    @end=[] # coordinates of end of maze indicated by "@"
+
     @traveled_path = []
     @visited_nodes = []
     @node_queue = []
-    @m_arr=[]
-    @start=[]
-    @end=[]
     @nodes=[]
     @levels=[]
-    maze_array
+  end
+
+  def solve_maze
   end
 
   def maze_array
-    @m_arr = @maze.split("\n").map do |m_row|
-      m_row.strip.split(//)
+    @maze_array = @maze.split("\n").map do |maze_row|
+      maze_row.strip.split(//)
     end
   end
 
   def startend
-    @m_arr.each do |m_row|
-      if m_row.index("→")
-        @start = [m_row.index("→"), @m_arr.index(m_row)]
+    @maze_array.each do |maze_row|
+      if maze_row.index("→")
+        @start = [maze_row.index("→"), @maze_array.index(maze_row)]
         @visited_nodes << @start
         @node_queue << @start
         @levels[0] = [@start]
-      elsif m_row.index("@")
-        @end = [m_row.index("@"), @m_arr.index(m_row)]
+      elsif maze_row.index("@")
+        @end = [maze_row.index("@"), @maze_array.index(maze_row)]
         @nodes << @end
       end
     end
@@ -36,9 +39,9 @@ class MazeSolver
   def possible_nodes
     y = 0
     x = 0
-    while y < @m_arr.length
-      while x <@m_arr[y].length
-        @nodes << [x, y] if @m_arr[y][x] == " "
+    while y < @maze_array.length
+      while x <@maze_array[y].length
+        @nodes << [x, y] if @maze_array[y][x] == " "
         x += 1
       end
       y += 1
@@ -47,9 +50,7 @@ class MazeSolver
   end
 
   def breadth
-    startend
-    possible_nodes
-    ctr = 1
+    counter = 1
     until @node_queue.include?(@end)
       new_node_queue = []
       @node_queue.each do |current_node|
@@ -75,41 +76,43 @@ class MazeSolver
           @visited_nodes << [x, y-1]
         end
       end
-      @levels[ctr]=new_node_queue
+      @levels[counter]=new_node_queue
       @node_queue = new_node_queue
-      ctr += 1
+      counter += 1
     end
-    p @levels
   end
 
   def solve
+    maze_array
+    startend
+    possible_nodes
     breadth
     @traveled_path << @start << @end
-    ctr = 1
-    while ctr <= @levels.length-2
-      if @levels[ctr].length == 1
-        @traveled_path << @levels[ctr][0]
-        ctr+=1
+    counter = 1
+    while counter <= @levels.length-2
+      if @levels[counter].length == 1
+        @traveled_path << @levels[counter][0]
+        counter+=1
       else
-        @levels[ctr].map do |coord|
+        @levels[counter].map do |coord|
           x, y = coord
-          if (@levels[ctr+1].include?([x+1, y]) ||
-              @levels[ctr+1].include?([x-1, y]) ||
-              @levels[ctr+1].include?([x, y+1]) ||
-              @levels[ctr+1].include?([x, y-1])) &&
-             (@levels[ctr-1].include?([x+1, y]) ||
-              @levels[ctr-1].include?([x-1, y]) ||
-              @levels[ctr-1].include?([x, y+1]) ||
-              @levels[ctr-1].include?([x, y-1]))
+          if (@levels[counter+1].include?([x+1, y]) ||
+              @levels[counter+1].include?([x-1, y]) ||
+              @levels[counter+1].include?([x, y+1]) ||
+              @levels[counter+1].include?([x, y-1])) &&
+             (@levels[counter-1].include?([x+1, y]) ||
+              @levels[counter-1].include?([x-1, y]) ||
+              @levels[counter-1].include?([x, y+1]) ||
+              @levels[counter-1].include?([x, y-1]))
               @traveled_path << coord
-              ctr+=1
+              counter+=1
           else
-            @levels[ctr].delete(coord)
+            @levels[counter].delete(coord)
           end
         end
       end
     end
-    @traveled_path
+    solution_path
   end
 
   def solution_path
@@ -117,15 +120,14 @@ class MazeSolver
   end
 
   def display_solution_path
-    solve
-    s_arr = @m_arr
+    solved_array = @maze_array
     @traveled_path.each do |coord|
       x, y = coord
-      s_arr[y][x] = "." if s_arr[y][x] == " "
+      solved_array[y][x] = "." if solved_array[y][x] == " "
     end
-    s_arr = s_arr.map do |row|
+    solved_array = solved_array.map do |row|
       row.join
     end.join("\n")
-    puts s_arr
+    puts solved_array
   end
 end
