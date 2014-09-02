@@ -5,15 +5,11 @@ class MazeSolver
     @maze_array=[] # @maze variable parsed into an array of rows
     @start=[] # coordinates of start of maze indicated by "→"
     @end=[] # coordinates of end of maze indicated by "@"
-
     @traveled_path = []
     @visited_nodes = []
     @node_queue = []
     @nodes=[]
     @levels=[]
-  end
-
-  def solve_maze
   end
 
   def maze_array
@@ -120,6 +116,7 @@ class MazeSolver
   end
 
   def display_solution_path
+    solve
     solved_array = @maze_array
     @traveled_path.each do |coord|
       x, y = coord
@@ -131,3 +128,20 @@ class MazeSolver
     puts solved_array
   end
 end
+
+maze =
+"
+      ######################
+      #         #          #
+      # ## ### ######## ## #
+      →   #     #   #      #
+      ### # ### ## ### ##  #
+      #     #   #          #
+      # ##########    ######
+      # #   #              @
+      # ### ########## #####
+      #         #          #
+      ######################"
+
+ms = MazeSolver.new(maze)
+ms.display_solution_path
